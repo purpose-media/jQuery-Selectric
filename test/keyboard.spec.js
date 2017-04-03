@@ -15,8 +15,8 @@ describe('keyboard', function() {
   });
 
   it('should open if has focus', function() {
-    $('.selectric-input').focus();
-    $('.selectric-items').find('li').click();
+    select.focus();
+    select.selectric('close');
     var inputElm = document.activeElement;
     keyvent.on(inputElm).down('down');
     expect($('.selectric-items').is(':visible')).toBe(true);

@@ -61,7 +61,8 @@
       opened         : false,
       currValue      : -1,
       selectedIdx    : -1,
-      highlightedIdx : -1
+      highlightedIdx : -1,
+      searchString   : ''
     };
 
     _this.eventTriggers = {
@@ -227,16 +228,16 @@
       _this.classes = _this.getClassNames();
 
       // Create elements
-      var input              = $('<input/>', { 'class': _this.classes.input, 'readonly': _this.utils.isMobile() });
+      // var input              = $('<input/>', { 'class': _this.classes.input, 'type': 'hidden', 'readonly': _this.utils.isMobile() });
       var items              = $('<div/>',   { 'class': _this.classes.items, 'tabindex': -1 });
       var itemsScroll        = $('<div/>',   { 'class': _this.classes.scroll });
       var wrapper            = $('<div/>',   { 'class': _this.classes.prefix, 'html': _this.options.arrowButtonMarkup });
       var label              = $('<span/>',  { 'class': 'label' });
-      var outerWrapper       = _this.$element.wrap('<div/>').parent().append(wrapper.prepend(label), items, input);
+      var outerWrapper       = _this.$element.wrap('<div/>').parent().append(wrapper.prepend(label), items);
       var hideSelectWrapper  = $('<div/>',   { 'class': _this.classes.hideselect });
 
       _this.elements = {
-        input        : input,
+        // input        : input,
         items        : items,
         itemsScroll  : itemsScroll,
         wrapper      : wrapper,
@@ -304,9 +305,9 @@
       } else {
         _this.elements.outerWrapper.addClass(_this.classes.disabled);
 
-        if ( _this.elements.input ) {
-          _this.elements.input.prop('disabled', true);
-        }
+        // if ( _this.elements.input ) {
+        //   _this.elements.input.prop('disabled', true);
+        // }
       }
 
       _this.utils.triggerCallback('Activate', _this);
@@ -560,7 +561,7 @@
       _this.elements.wrapper
         .add(_this.$element)
         .add(_this.elements.outerWrapper)
-        .add(_this.elements.input)
+        // .add(_this.elements.input)
         .off(eventNamespaceSuffix);
     },
 
@@ -592,19 +593,15 @@
       // Disabled on mobile devices because the default option list isn't
       // shown due the fact that hidden input gets focused
       if ( !(_this.options.nativeOnMobile && _this.utils.isMobile()) ) {
-        _this.$element.on('focus' + eventNamespaceSuffix, function() {
-          _this.elements.input.focus();
-        });
-
-        _this.elements.input
+        _this.$element
           .prop({ tabindex: _this.originalTabindex, disabled: false })
           .on('keydown' + eventNamespaceSuffix, $.proxy(_this.handleKeys, _this))
           .on('focusin' + eventNamespaceSuffix, function(e) {
             _this.elements.outerWrapper.addClass(_this.classes.focus);
 
             // Prevent the flicker when focusing out and back again in the browser window
-            _this.elements.input.one('blur', function() {
-              _this.elements.input.blur();
+            _this.$element.one('blur', function() {
+              _this.$element.blur();
             });
 
             if ( _this.options.openOnFocus && !_this.state.opened ) {
@@ -613,26 +610,6 @@
           })
           .on('focusout' + eventNamespaceSuffix, function() {
             _this.elements.outerWrapper.removeClass(_this.classes.focus);
-          })
-          .on('input propertychange', function() {
-            var val = _this.elements.input.val();
-            var searchRegExp = new RegExp('^' + _this.utils.escapeRegExp(val), 'i');
-
-            // Clear search
-            clearTimeout(_this.resetStr);
-            _this.resetStr = setTimeout(function() {
-              _this.elements.input.val('');
-            }, _this.options.keySearchTimeout);
-
-            if ( val.length ) {
-              // Search in select options
-              $.each(_this.items, function(i, elm) {
-                if ( !elm.disabled && searchRegExp.test(elm.text) || searchRegExp.test(elm.slug) ) {
-                  _this.highlight(i);
-                  return;
-                }
-              });
-            }
           });
       }
 
@@ -706,6 +683,31 @@
       // Space / Enter / Left / Up / Right / Down
       if ( isOpenKey && !_this.state.opened ) {
         _this.open();
+      }
+
+      // Any other key
+      _this.handleSearch(key);
+    },
+
+    handleSearch: function(key) {
+      var _this = this;
+      var val = _this.state.searchString += String.fromCharCode(key);
+      var searchRegExp = new RegExp('^' + _this.utils.escapeRegExp(val), 'i');
+
+      // Clear search
+      clearTimeout(_this.resetSearchStrTimer);
+      _this.resetSearchStrTimer = setTimeout(function() {
+        _this.state.searchString = '';
+      }, _this.options.keySearchTimeout);
+
+      if ( val.length ) {
+        // Search in select options
+        $.each(_this.items, function(i, elm) {
+          if ( !elm.disabled && searchRegExp.test(elm.text) || searchRegExp.test(elm.slug) ) {
+            _this.highlight(i);
+            return;
+          }
+        });
       }
     },
 
@@ -833,10 +835,9 @@
         // Toggle options box visibility
         _this.elements.outerWrapper.addClass(_this.classes.open);
 
-        // Give dummy input focus
-        _this.elements.input.val('');
+        // Give original select element focus
         if ( e && e.type !== 'focusin' ) {
-          _this.elements.input.focus();
+          _this.$element.focus();
         }
 
         // Delayed binds events on Document to make label clicks work

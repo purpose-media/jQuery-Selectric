@@ -22,23 +22,23 @@ describe('visibility', function() {
   });
 
   it('should open on focus', function() {
-    $('.selectric-input').focusin();
+    select.focusin();
     expect($('.selectric-items').is(':visible')).toBe(true);
   });
 
   it('should add .selectric-focus on focusin', function() {
-    $('.selectric-input').focusin();
+    select.focusin();
     expect($('.selectric-wrapper').hasClass('selectric-focus')).toBe(true);
   });
 
   it('should remove .selectric-focus on focusout', function() {
-    $('.selectric-input').focusin().focusout();
+    select.focusin().focusout();
     expect($('.selectric-wrapper').hasClass('selectric-focus')).toBe(false);
   });
 
   it('should prevent the flicker when focusing out and back again', function() {
     var spy = spyOn($.fn, 'blur');
-    $('.selectric-input').focusin().trigger('blur').trigger('blur').trigger('blur');
+    select.focusin().trigger('blur').trigger('blur').trigger('blur');
     expect(spy).toHaveBeenCalledTimes(1);
   });
 

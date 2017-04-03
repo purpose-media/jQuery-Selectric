@@ -1,5 +1,5 @@
 /* eslint-env jasmine, jquery */
-/* global loadFixtures */
+/* global loadFixtures, keyvent */
 
 'use strict';
 
@@ -75,8 +75,16 @@ describe('basic suite', function() {
   });
 
   it('should search an option', function() {
-    $('.selectric-input').val('banana').trigger('input');
-    $('.selectric-items').find('.highlighted').click();
+    $('.selectric').click();
+    var inputElm = document.activeElement;
+    var kb = keyvent.on(inputElm);
+    kb.down(66); // b
+    kb.down(65); // a
+    kb.down(79); // n
+    kb.down(65); // a
+    kb.down(79); // n
+    kb.down(65); // a
+    kb.down('enter');
     expect(select.val()).toBe('banana');
   });
 
