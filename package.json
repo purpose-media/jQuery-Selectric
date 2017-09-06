@@ -1,6 +1,5 @@
 {
-  "name": "selectric",
-  "version": "1.13.0",
+  "name": "pm-selectric",
   "main": "public/jquery.selectric.js",
   "title": "jQuery Selectric",
   "author": {
@@ -25,7 +24,7 @@
   "homepage": "http://selectric.js.org/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lcdsantos/jQuery-Selectric.git"
+    "url": "https://github.com/purpose-media/jQuery-Selectric.git"
   },
   "dependencies": {
     "jquery": "^3.1.1"
