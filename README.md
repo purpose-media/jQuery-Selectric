@@ -275,6 +275,22 @@ $('select').selectric({
 }
 ```
 
+## Wrapper Classes
+
+Any classes that were applied to the select box prior to the plugin initializing will be carried forward as a selectric 
+wrapper class, prefixed with the class that was defined in the options above.
+
+For example:
+
+```html
+<select class="primary another-class"></select>
+```
+
+Will convert into:
+
+<pre>&lt;div class="selectric-wrapper <b>selectric-primary selectric-another-class</b>"&gt;...&lt;/div&gt;</pre>
+
+
 ## Events:
 
 All events are called on original element, first argument is the original element too. And can be bound like this:
